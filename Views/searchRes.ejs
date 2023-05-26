@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title> Библиотека </title>
+    <meta charset="UTF-8">
+    <style> body {background-color: #c49a6c } </style>
+    <style>
+        table{
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        th, td{
+            padding: 10px 20px;
+            border: 1px solid #000;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+<a href="http://localhost:8080/taken" >Взятые книги </a>
+<h1><a href="http://localhost:8080/"><img src = "book.png"   height = "100"></a>
+    Библиотека</h1>
+<hr color="black">
+
+    <table >
+        <thead>
+        <tr><th>Название книги</th><th>Количество экземпляров</th><th></th></tr>
+        </thead>
+        <tbody>
+        <% for (let i=0;i<books.length;i++){%>
+            <tr> <td><%=books[i].name%></td>
+                <td class="<%=books[i].ISBN%>"><%=books[i].count - books[i].taken.length%></td>
+                <td><button class = 'button <%=books[i].ISBN%>'
+                    <%if((books[i].count - books[i].taken.length) <=0){%>
+                            disabled = "true"
+                    <%}%>
+                            onclick="take('<%=books[i].ISBN%>')">Взять</button>
+                </td>
+            </tr>
+
+        <%}%>
+        </tbody>
+    </table>
+
+
+    <script >
+        async function take(isbn) {
+            const co = document.getElementsByClassName(isbn.toString())[0];
+            let Body = { ISBN: isbn};
+            let text = JSON.stringify(Body);
+            console.log(text);
+
+            await fetch('/searchRes',{
+                method: 'POST',
+                body: text,
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            }).then((res) => {
+                console.log(co);
+                if(res.ok){
+                    co.innerHTML = co.innerHTML - 1;
+
+                    if(co.innerHTML <= 0){
+                        but = document.getElementsByClassName('button ' + isbn.toString())[0];
+                        but.disabled = true;
+                    }
+
+                }
+                console.log('res = ok ?');
+            })
+            }
+
+    </script>
+
+</body>
+</html>
